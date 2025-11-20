@@ -1,3 +1,9 @@
+/*
+  文件: source/js/tools/localSearch.js
+  目的: 本地搜索功能（依赖 `hexo-generator-searchdb` 或 search.json）。
+       提供关键字高亮、结果裁切与分页展示的基本实现。
+  说明: 如果未安装 `hexo-generator-searchdb`，此模块会发出警告并退出。
+*/
 export default function initLocalSearch() {
   // Search DB path
   let searchPath = config.path;
@@ -19,6 +25,7 @@ export default function initLocalSearch() {
   const searchInputDom = document.querySelector(".search-input");
   const resultContent = document.getElementById("search-result");
 
+  // 在文本中找到单词的所有位置，返回位置数组
   const getIndexByWord = (word, text, caseSensitive) => {
     let wordLen = word.length;
     if (wordLen === 0) return [];
@@ -36,7 +43,7 @@ export default function initLocalSearch() {
     return index;
   };
 
-  // Merge hits into slices
+  // 将命中的关键字合并为一个片段（slice），用于在搜索结果中展示上下文
   const mergeIntoSlice = (start, end, index, searchText) => {
     let currentItem = index[index.length - 1];
     let { position, word } = currentItem;
@@ -77,7 +84,7 @@ export default function initLocalSearch() {
     };
   };
 
-  // Highlight title and content
+  // 对切片内的命中关键字进行高亮处理，返回带 <b> 标记的 HTML
   const highlightKeyword = (text, slice) => {
     let result = "";
     let prevEnd = slice.start;

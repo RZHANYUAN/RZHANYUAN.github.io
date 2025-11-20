@@ -1,5 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+<!--
+    文件: layout/components/header/head.ejs
+    目的: 主题的页面 <head> 部分。设置 meta 标签、preconnect，应用初始主题
+             （以避免显示错误主题的闪烁），包含 analytics / open-graph / meta
+                并加载字体与 CSS 资源。
+    说明: 在 DOMContentLoaded 之前运行的脚本应放在此处以避免主题闪烁。
+                除非确认 `_config.yml` 中不再需要对应的 FontAwesome 变体，否则
+                不要移除 FontAwesome 的引入。
+-->
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -99,15 +108,15 @@
     
     
     <!--- Icon Part-->
-    <link rel="icon" type="image/png" href="/images/redefine-favicon.svg" sizes="192x192">
-    <link rel="apple-touch-icon" sizes="180x180" href="/images/redefine-favicon.svg">
+    <link rel="icon" type="image/png" href="/images/rrr.jpg" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/rrr.jpg">
     <meta name="theme-color" content="#A31F34">
-    <link rel="shortcut icon" href="/images/redefine-favicon.svg">
+    <link rel="shortcut icon" href="/images/rrr.jpg">
     <!--- Page Info-->
     
     <title>
         
-            RZHANYUAN - Redefine Your Hexo Journey.
+            花灯如昼 - 唯有梦境与诗歌不可辜负
         
     </title>
 
@@ -141,11 +150,15 @@
     
     
     
+        
+<script src="/js/build/libs/anime.min.js"></script>
+
+    
 
     <script id="hexo-configurations">
     window.config = {"hostname":"example.com","root":"/","language":"en"};
-    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"delete_mask":false,"title_alignment":"left","headings_top_spacing":{"h1":"3.2rem","h2":"2.4rem","h3":"1.9rem","h4":"1.6rem","h5":"1.4rem","h6":"1.3rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","highlight_theme":{"light":"github","dark":"vs2015"},"font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"pangu_js":false,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null},"title":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":true,"site_pv":true,"site_uv":true,"post_pv":true,"countapi":{"enable":true,"namespace":"redefine","site_pv_key":"site_pv","site_uv_key":"site_uv","page_key_prefix":"page","uv_ttl_hours":24}},"single_page":true,"preloader":{"enable":false,"custom_message":null},"side_tools":{"gear_rotation":true,"auto_expand":false},"open_graph":{"enable":true,"image":"/images/redefine-og.webp","description":"Hexo Theme Redefine, Redefine Your Hexo Journey."},"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/images/wallhaven-wqery6-light.webp","dark":"/images/wallhaven-wqery6-dark.webp"},"title":"Theme Redefine","subtitle":{"text":[],"hitokoto":{"enable":false,"show_author":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"style":"default","links":{"github":null,"instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"11.4.1"}},"version":"2.8.5","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"}},"search":{"enable":false,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","excerpt_length":200,"categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2022/8/17 11:45:14"};
-    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"delete_mask":false,"title_alignment":"left","headings_top_spacing":{"h1":"3.2rem","h2":"2.4rem","h3":"1.9rem","h4":"1.6rem","h5":"1.4rem","h6":"1.3rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","highlight_theme":{"light":"github","dark":"vs2015"},"font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"pangu_js":false,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null},"title":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":true,"site_pv":true,"site_uv":true,"post_pv":true,"countapi":{"enable":true,"namespace":"redefine","site_pv_key":"site_pv","site_uv_key":"site_uv","page_key_prefix":"page","uv_ttl_hours":24}},"single_page":true,"preloader":{"enable":true,"custom_message":"渐行渐远渐无书，水阔沉于何处问。"},"side_tools":{"gear_rotation":true,"auto_expand":false},"open_graph":{"enable":true,"image":"/images/redefine-og.webp","description":"Hexo Theme Redefine, Redefine Your Hexo Journey."},"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/images/wallhaven-wqery6-light.webp","dark":"/images/wallhaven-wqery6-dark.webp"},"title":"花自飘零水自流，一种相思，两处闲愁。","subtitle":{"text":[],"hitokoto":{"enable":false,"show_author":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"style":"default","links":{"github":null,"instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"11.4.1"}},"version":"2.8.5","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"}},"search":{"enable":false,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","excerpt_length":200,"categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2022/8/17 11:45:14"};
+    window.lang_ago = {"second":"%s 秒以前","minute":"%s 分钟以前","hour":"%s 小时以前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
     window.data = {"masonry":false};
   </script>
     
@@ -180,6 +193,190 @@
 	<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
 	<!--        </span>-->
 	
+</div>
+
+<style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    <h2 class="ml13">
+        <span id="preloader_message">渐行渐远渐无书，水阔沉于何处问。</span>
+    </h2>
+    <script>
+        // 中文注释：从配置的库中随机选择一条显示，优先使用 theme.global.preloader.library；
+        // 若不存在则回退到 theme.home_banner.library；若都不存在则使用原有的 custom_message 或 site title。
+        (function(){
+            try {
+                // 优先读取站点层 _data/banner.yml（site.data.banner），其次主题层 theme.data.banner；再看 preloader.library 或 home_banner.library
+                const rawLib = ["花自飘零水自流，一种相思，两处闲愁。","人面不知何处去，桃花依旧笑春风。","渐行渐远渐无书，水阔沉于何处问。","忆君心似西江水，日夜东流无歇时。","愿为西南风，长逝入君怀。","花满河阳，为君羞褪晨妆茜。","直道相思了无益，未妨惆怅是清狂。","红烛背，绣帘垂，梦长君不知。","千里暮云平，南楼催上烛，晚来晴。","芷兰生于深林，非以无人而不芳。","施惠勿念，受恩莫忘。","再拜陈三愿：一愿郎君千岁，二愿妾身常健，三愿如同梁上燕，岁岁长相见。","千尽千帆皆不是，斜晖脉脉水悠悠。","封侯非我意，但愿海波平。","草色烟光残照里，无言谁会凭阑意。","见不尽者，天下之事。读不尽者，天下之书。参不尽者，天下之理。","从别后，忆相逢。几回魂梦与君同。","满目山河空念远，落花风雨更伤春，不如怜取眼前人。","问君何能尔？心远地自偏。","四十三年，望中犹记，烽火扬州路。","诚知此恨人人有，贫贱夫妻百事哀。","从此音尘各悄然，春山如黛草如烟。","休对故人思故国，且将新火试新茶。诗酒趁年华。","知我者，谓我心忧；不知我者，谓我何求。","我心匪石，不可转也。","日日思君不见君，共饮长江水。","君泪盈，妾泪盈，罗带同心结未成，江边潮已平。"];
+                const el = document.getElementById('preloader_message');
+                if (!el) return;
+                let items = [];
+                if (Array.isArray(rawLib)) {
+                    rawLib.forEach(item => {
+                        if (typeof item === 'string') items.push(item);
+                        else if (item && typeof item === 'object') {
+                            if (item.title) items.push(String(item.title));
+                            if (item.subtitle) items.push(String(item.subtitle));
+                        }
+                    });
+                } else if (rawLib && typeof rawLib === 'object') {
+                    Object.keys(rawLib).forEach(k => {
+                        if (k) items.push(String(k));
+                        if (rawLib[k]) items.push(String(rawLib[k]));
+                    });
+                }
+                if (items.length === 0) {
+                    console.warn('[redefine] preloader: 未找到候选条目，检查 site.data.banner 或 themes/redefine/_data/banner.yml');
+                    console.debug('[redefine] preloader 原始数据：', rawLib);
+                    return; // 没有候选项则保留默认文本
+                }
+                const idx = Math.floor(Math.random() * items.length);
+                console.debug('[redefine] preloader 候选数:', items.length, '选中索引:', idx, '内容:', items[idx]);
+                el.textContent = items[idx] || items[0];
+            } catch (e) {
+                // 忽略任何错误，保留原有文本
+            }
+        })();
+    </script>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+        var animation = anime.timeline({ loop: true })
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [20, 0],
+                translateZ: 0,
+                opacity: [0, 1],
+                filter: ['blur(5px)', 'blur(0px)'],
+                easing: "easeOutExpo",
+                duration: 1200,
+                delay: (el, i) => 300 + 20 * i,
+            })
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [0, -20],
+                opacity: [1, 0],
+                filter: ['blur(0px)', 'blur(5px)'],
+                easing: "easeInExpo",
+                duration: 1000,
+                delay: (el, i) => 15 * i,
+                complete: function() {
+                    hidePreloader();
+                }
+            }, '-=700');
+
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            setTimeout(hidePreloader, 5000); // Call hidePreloader after 5000 milliseconds if not already called by animation
+        });
+
+        function hidePreloader() {
+            var preloader = document.querySelector('.preloader');
+            preloader.style.opacity = '0';
+            setTimeout(function () {
+                preloader.style.display = 'none';
+            }, 200);
+        }
+    </script>
 </div>
 
 <main class="page-container" id="swup">
@@ -221,16 +418,68 @@
 
 <div class="home-banner-container flex justify-center items-center transition-fade relative">
     
+    
     <div class="content mt-8 flex flex-col justify-center items-center transition-fade-down">
-        <div class="description flex flex-col justify-center items-center w-screen font-medium text-center"
+        <div class="description flex justify-center items-center w-screen font-medium text-center"
         
         >
-            Theme Redefine
-            
-            
-                <p><i id="subtitle"></i></p>
-            
+            <span id="banner_line" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;width:100%;font-size: calc(1.2 * 2.8rem);">
+                花自飘零水自流，一种相思，两处闲愁。
+                
+            </span>
         </div>
+
+        <script data-swup-reload-script>
+            (function(){
+                // 将函数绑定到 window，以便在单页切换时重复调用
+                function __redefine_banner_randomize(){
+                    try {
+                        // 优先读取站点层 _data/banner.yml（site.data.banner），其次主题层 theme.data.banner，最后回退到 theme.home_banner.library
+                        const lib = ["花自飘零水自流，一种相思，两处闲愁。","人面不知何处去，桃花依旧笑春风。","渐行渐远渐无书，水阔沉于何处问。","忆君心似西江水，日夜东流无歇时。","愿为西南风，长逝入君怀。","花满河阳，为君羞褪晨妆茜。","直道相思了无益，未妨惆怅是清狂。","红烛背，绣帘垂，梦长君不知。","千里暮云平，南楼催上烛，晚来晴。","芷兰生于深林，非以无人而不芳。","施惠勿念，受恩莫忘。","再拜陈三愿：一愿郎君千岁，二愿妾身常健，三愿如同梁上燕，岁岁长相见。","千尽千帆皆不是，斜晖脉脉水悠悠。","封侯非我意，但愿海波平。","草色烟光残照里，无言谁会凭阑意。","见不尽者，天下之事。读不尽者，天下之书。参不尽者，天下之理。","从别后，忆相逢。几回魂梦与君同。","满目山河空念远，落花风雨更伤春，不如怜取眼前人。","问君何能尔？心远地自偏。","四十三年，望中犹记，烽火扬州路。","诚知此恨人人有，贫贱夫妻百事哀。","从此音尘各悄然，春山如黛草如烟。","休对故人思故国，且将新火试新茶。诗酒趁年华。","知我者，谓我心忧；不知我者，谓我何求。","我心匪石，不可转也。","日日思君不见君，共饮长江水。","君泪盈，妾泪盈，罗带同心结未成，江边潮已平。"];
+                        let items = [];
+                        if (Array.isArray(lib)) {
+                            lib.forEach(item => {
+                                if (typeof item === 'string') items.push(item);
+                                else if (item && typeof item === 'object') {
+                                    if (item.title) items.push(String(item.title));
+                                    if (item.subtitle) items.push(String(item.subtitle));
+                                }
+                            });
+                        } else if (lib && typeof lib === 'object') {
+                            Object.keys(lib).forEach(k => {
+                                if (k) items.push(String(k));
+                                if (lib[k]) items.push(String(lib[k]));
+                            });
+                        }
+                        if (items.length === 0) {
+                            console.warn('[redefine] banner: 未找到候选条目，检查 site.data.banner 或 source/_data/banner.yml');
+                            console.debug('[redefine] banner 原始数据：', lib);
+                            return;
+                        }
+                        const idx = Math.floor(Math.random() * items.length);
+                        const pick = items[idx] || items[0];
+                        console.debug('[redefine] banner 候选数:', items.length, '选中索引:', idx, '内容:', pick);
+                        const el = document.getElementById('banner_line');
+                        if (el) el.textContent = pick;
+                    } catch (e) { console.error(e); }
+                }
+                // 立即执行一次
+                __redefine_banner_randomize();
+
+                // 如果是单页模式，确保在 swup 内容替换后再次执行（避免重复绑定）
+                try {
+                    if (!window.__redefine_banner_listener_added) {
+                        window.__redefine_banner_listener_added = true;
+                        document.addEventListener('swup:contentReplaced', function(){
+                            try { __redefine_banner_randomize(); } catch(e){}
+                        });
+                        document.addEventListener('contentReplaced', function(){
+                            try { __redefine_banner_randomize(); } catch(e){}
+                        });
+                    }
+                } catch (e) {}
+            })();
+        </script>
         
     </div>
     <script>
@@ -332,7 +581,7 @@
             
             <a class="logo-title" href="/">
                 <h1>
-                RZHANYUAN
+                花灯如昼
                 </h1>
             </a>
         </div>
@@ -439,27 +688,18 @@
         </ul>
 
         <div class="statistics flex justify-around my-2.5">
-    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">2</div>
-        <div class="label text-third-text-color text-sm">Tags</div>
-    </a>
-    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
-        <div class="label text-third-text-color text-sm">Categories</div>
-    </a>
+    <!-- 隐藏 tags 与 categories 统计显示，保留 posts 统计 -->
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
         <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">2</div>
-        <div class="label text-third-text-color text-sm">Posts</div>
+        <div class="label text-third-text-color text-sm">文章</div>
     </a>
-    </a>
+</div>
 
-    </div>
 
-    
     <div class="statistics-extra flex justify-center my-2.5">
         <div class="item tag-count-item flex flex-col justify-center items-center w-20">
             <div id="online-count-number" class="number text-2xl sm:text-xl text-second-text-color font-semibold">--</div>
-            <div class="label text-third-text-color text-sm">online</div>
+            <div class="label text-third-text-color text-sm">在线</div>
         </div>
     </div>
     <script>
@@ -547,7 +787,7 @@
             
             <div class="sidebar-content" >
                 <div class="avatar flex justify-center">
-    <img src="/images/redefine-avatar.svg">
+    <img src="/images/rrr.jpg">
 </div>
                 <div class="author flex flex-col justify-center my-2.5 mx-0">
     <div class="name">RZHANYUAN</div>
@@ -556,27 +796,18 @@
     
 </div>
                 <div class="statistics flex justify-around my-2.5">
-    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">2</div>
-        <div class="label text-third-text-color text-sm">Tags</div>
-    </a>
-    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
-        <div class="label text-third-text-color text-sm">Categories</div>
-    </a>
+    <!-- 隐藏 tags 与 categories 统计显示，保留 posts 统计 -->
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
         <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">2</div>
-        <div class="label text-third-text-color text-sm">Posts</div>
+        <div class="label text-third-text-color text-sm">文章</div>
     </a>
-    </a>
+</div>
 
-    </div>
 
-    
     <div class="statistics-extra flex justify-center my-2.5">
         <div class="item tag-count-item flex flex-col justify-center items-center w-20">
             <div id="online-count-number" class="number text-2xl sm:text-xl text-second-text-color font-semibold">--</div>
-            <div class="label text-third-text-color text-sm">online</div>
+            <div class="label text-third-text-color text-sm">在线</div>
         </div>
     </div>
     <script>
@@ -686,8 +917,8 @@
                         
                     </div>
 
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
+                    <div class="home-article-meta-info-container flex items-center justify-between">
+    <div class="home-article-meta-info flex items-center space-x-4">
         <span><i class="fa-solid fa-calendars"></i>&nbsp;
             <span class="home-article-date" data-date="Thu Nov 20 2025 16:23:44 GMT+0800">
                 
@@ -695,44 +926,10 @@
                 
             </span>
         </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/">博客搭建</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/%E6%8A%80%E6%9C%AF/">技术</a>&nbsp;
-                        </li>
-                    
-                        <li>
-                            | 
-                            <a href="/tags/Hexo/">Hexo</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
+        <!-- 首页文章列表的 categories/tags 显示已隐藏 -->
     </div>
 
-    <a href="/2025/11/20/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/">Read more<span class="seo-reader-text">我的第一篇博客</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
+    <a class="home-article-readmore ml-4 whitespace-nowrap" href="/2025/11/20/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/">了解更多<span class="seo-reader-text">我的第一篇博客</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
 </div>
 
                 </div>
@@ -760,8 +957,8 @@ Qu...
                         
                     </div>
 
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
+                    <div class="home-article-meta-info-container flex items-center justify-between">
+    <div class="home-article-meta-info flex items-center space-x-4">
         <span><i class="fa-solid fa-calendars"></i>&nbsp;
             <span class="home-article-date" data-date="Thu Nov 20 2025 16:20:42 GMT+0800">
                 
@@ -769,11 +966,10 @@ Qu...
                 
             </span>
         </span>
-        
-        
+        <!-- 首页文章列表的 categories/tags 显示已隐藏 -->
     </div>
 
-    <a href="/2025/11/20/hello-world/">Read more<span class="seo-reader-text">Hello World</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
+    <a class="home-article-readmore ml-4 whitespace-nowrap" href="/2025/11/20/hello-world/">了解更多<span class="seo-reader-text">Hello World</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
 </div>
 
                 </div>
@@ -795,42 +991,39 @@ Qu...
 		</div>
 
 		<div class="main-content-footer">
-			<footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+			<!--
+    文件: layout/components/footer/footer.ejs
+    目的: 网站页脚模板。渲染版权、站点统计、计数器、主题署名以及可选的运行时间显示。
+    说明: 本文件包含依赖主题配置的动态元素（例如 `website_counter`），
+                这些元素会由运行时脚本（vercount / CountAPI 回退 / odometer 等）更新。
+-->
+<footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
     <div class="info-container py-3 text-center">
         
         <div class="text-center">
-            &copy;
-            
-              <span>2022</span>
-              -
-            
-            2025&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">RZHANYUAN</a>
-            
-                
-                <p class="post-count space-x-0.5">
-                    <span>
-                         文章数量 2
-                    </span>
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between w-full">
+                <div class="footer-left text-center lg:text-left lg:flex-1">
+                    <!-- left intentionally left blank to allow center alignment -->
+                </div>
+                <div class="footer-center mt-2 lg:mt-0 flex-1 text-center">
+                    &copy;&nbsp;2025&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">RZHANYUAN</a>
+                </div>
+                <div class="footer-right mt-2 lg:mt-0 text-right lg:flex-none">
                     
-                </p>
-            
+                        
+                            <span class="inline-block mr-4">页面浏览量：<span id="busuanzi_value_site_pv">0</span></span>
+                        
+                        
+                            <span class="inline-block">访问用户数量：<span id="busuanzi_value_site_uv">0</span></span>
+                        
+                    
+                </div>
+            </div>
         </div>
         
+            <!-- 计数脚本（保留，用于填充上方右侧的 PV/UV 元素） -->
             <script data-swup-reload-script src="https://cn.vercount.one/js"></script>
-            <div class="relative text-center lg:absolute lg:right-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-right">
-                
-                    <span id="busuanzi_container_site_uv" class="lg:!block">
-                        <span class="text-sm">Visitors</span>
-                        <span id="busuanzi_value_site_uv"></span>
-                    </span>
-                
-                
-                    <span id="busuanzi_container_site_pv" class="lg:!block">
-                        <span class="text-sm">Total page views</span>
-                        <span id="busuanzi_value_site_pv"></span>
-                    </span>
-                
-            </div>
+            <!-- 右侧浮动的站点计数已移至 post-count 行内 -->
             
             <script data-swup-reload-script>
                 (function(){
@@ -899,11 +1092,51 @@ Qu...
                     }
                 })();
             </script>
+            <script data-swup-reload-script>
+                (function(){
+                    // Provide optional fallback values and format PV/UV with thousands separators.
+                    const fallback = {};
+                    const ids = { pv: 'busuanzi_value_site_pv', uv: 'busuanzi_value_site_uv' };
+                    function formatNumber(n) {
+                        if (n === null || typeof n === 'undefined' || n === '') return '';
+                        const num = Number(String(n).replace(/,/g, ''));
+                        if (isNaN(num)) return String(n);
+                        return num.toLocaleString();
+                    }
+                    function setIfEmpty(id, value) {
+                        const el = document.getElementById(id);
+                        if (!el) return;
+                        if (!el.textContent || el.textContent === '0') el.textContent = formatNumber(value || 0);
+                    }
+                    // Apply configured fallback immediately (so user sees something before async scripts return)
+                    if (fallback && typeof fallback === 'object') {
+                        if (fallback.site_pv) setIfEmpty(ids.pv, fallback.site_pv);
+                        if (fallback.site_uv) setIfEmpty(ids.uv, fallback.site_uv);
+                    }
+                    // Format existing values now (in case external scripts already wrote raw numbers)
+                    ['busuanzi_value_site_pv','busuanzi_value_site_uv'].forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el && el.textContent) el.textContent = formatNumber(el.textContent);
+                    });
+                    // Observe changes and re-format whenever the text changes (covers async updates by external scripts)
+                    ['busuanzi_value_site_pv','busuanzi_value_site_uv'].forEach(id => {
+                        const el = document.getElementById(id);
+                        if (!el) return;
+                        try {
+                            const mo = new MutationObserver(() => { el.textContent = formatNumber(el.textContent); });
+                            mo.observe(el, { childList: true, characterData: true, subtree: true });
+                        } catch (e) {}
+                    });
+                })();
+            </script>
         
+        <!-- 已隐藏：Powered by / Theme 信息（按用户请求移除） -->
+        <!-- 原始内容：
         <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
-            <span class="lg:block text-sm">DESARROLLADO POR <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
-            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.8.5</a></span>
+            <span>POWERED BY <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a></span>
+            <span>&nbsp;THEME&nbsp;<a href="https://redefine.ohevan.com" target="_blank" rel="noopener">Redefine</a> v</span>
         </div>
+        -->
         
         
             <div>
@@ -1019,7 +1252,13 @@ Qu...
 
 
 
-	
+	<!--
+    文件: layout/components/scripts.ejs
+    目的: 脚本与样式的集中加载模板。根据主题配置决定需要加载的 JS 模块
+             与可选库。
+    说明: 保持此处的加载顺序与 `source/js` 的入口文件一致，以免出现依赖问题。
+-->
+
 <script src="/js/build/tools/imageViewer.js" type="module"></script>
 
 <script src="/js/build/utils.js" type="module"></script>
@@ -1073,10 +1312,6 @@ Qu...
 
 
 
-
-
-    
-<script src="/js/build/libs/anime.min.js"></script>
 
 
 

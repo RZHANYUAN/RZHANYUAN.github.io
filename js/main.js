@@ -1,4 +1,10 @@
-/* main function */
+/*
+  文件: source/js/main.js
+  目的: 主题的主入口模块。初始化页面行为并协调各类工具与插件。
+       本文件导出 `main` 对象与 `initMain()`，分别在 DOMContentLoaded
+       与 swup 页面查看事件中被调用。
+  说明: 保持此文件简洁，复杂功能应委托给 `tools/`、`layouts/` 和 `plugins/` 模块。
+*/
 import initUtils from "./utils.js";
 import initTyped from "./plugins/typed.js";
 import initModeToggle from "./tools/lightDarkSwitch.js";
@@ -8,6 +14,10 @@ import initLocalSearch from "./tools/localSearch.js";
 import initCopyCode from "./tools/codeBlock.js";
 import initBookmarkNav from "./layouts/bookmarkNav.js";
 
+/*
+  `main` 是客户端主题的中央状态持有者。它保存主题信息、持久化的样式状态（存于 localStorage），
+  以及用于初始化/刷新页面功能的函数。
+*/
 export const main = {
   themeInfo: {
     theme: `Redefine v${theme.version}`,
@@ -44,6 +54,7 @@ export const main = {
       return null;
     }
   },
+  // refresh: 根据页面上下文重新初始化或启动子系统
   refresh: () => {
     initUtils();
     initModeToggle();
@@ -72,6 +83,7 @@ export const main = {
 };
 
 export function initMain() {
+  // 在 DOMContentLoaded 时调用一次以打印信息并启动功能
   main.printThemeInfo();
   main.refresh();
 }

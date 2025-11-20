@@ -18,6 +18,12 @@ const saveOriginalData = function () {
       reject(error);
     }
   });
+/*
+  文件: source/js/tools/lightDarkSwitch.js
+  目的: 主题的明/暗色模式切换模块，负责在页面上切换主题类并保存到 localStorage，
+       同步 mermaid 与 giscus 等第三方组件的主题。
+  说明: 本模块导出 `ModeToggle` 对象，并提供 `initModeToggle()` 作为默认导出。
+*/
 };
 
 const resetProcessed = function () {
@@ -41,8 +47,8 @@ const resetProcessed = function () {
   });
 };
 export const ModeToggle = {
-  modeToggleButton_dom: null,
-  iconDom: null,
+  modeToggleButtons_dom: [],
+  iconDomList: [],
   mermaidLightTheme: null,
   mermaidDarkTheme: null,
 
@@ -59,7 +65,9 @@ export const ModeToggle = {
     document.documentElement.classList.remove("dark");
     document.body.classList.add("light-mode");
     document.documentElement.classList.add("light");
-    this.iconDom.className = "fa-regular fa-moon";
+    this.iconDomList.forEach((icon) => {
+      icon.className = "fa-regular fa-moon";
+    });
     main.styleStatus.isDark = false;
     main.setStyleStatus();
     this.mermaidInit(this.mermaidLightTheme);
@@ -71,7 +79,9 @@ export const ModeToggle = {
     document.documentElement.classList.remove("light");
     document.body.classList.add("dark-mode");
     document.documentElement.classList.add("dark");
-    this.iconDom.className = "fa-regular fa-brightness";
+    this.iconDomList.forEach((icon) => {
+      icon.className = "fa-regular fa-brightness";
+    });
     main.styleStatus.isDark = true;
     main.setStyleStatus();
     this.mermaidInit(this.mermaidDarkTheme);
@@ -120,9 +130,12 @@ export const ModeToggle = {
   },
 
   initModeToggleButton() {
-    this.modeToggleButton_dom.addEventListener("click", () => {
-      const isDark = document.body.classList.contains("dark-mode");
-      isDark ? this.enableLightMode() : this.enableDarkMode();
+    if (!this.modeToggleButtons_dom.length) return;
+    this.modeToggleButtons_dom.forEach((button) => {
+      button.addEventListener("click", () => {
+        const isDark = document.body.classList.contains("dark-mode");
+        isDark ? this.enableLightMode() : this.enableDarkMode();
+      });
     });
   },
 
@@ -134,10 +147,10 @@ export const ModeToggle = {
   },
 
   async init() {
-    this.modeToggleButton_dom = document.querySelector(
+    this.modeToggleButtons_dom = document.querySelectorAll(
       ".tool-dark-light-toggle",
     );
-    this.iconDom = document.querySelector(".tool-dark-light-toggle i");
+    this.iconDomList = document.querySelectorAll(".tool-dark-light-toggle i");
     this.mermaidLightTheme =
       typeof theme.mermaid !== "undefined" &&
       typeof theme.mermaid.style !== "undefined" &&

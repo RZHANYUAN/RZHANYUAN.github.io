@@ -1,3 +1,9 @@
+/*
+  文件: source/js/tools/imageViewer.js
+  目的: 图片查看器。处理图片点击放大、缩放、拖拽与键盘导航等交互。
+  说明: 该模块会在页面图片元素上绑定事件，使用前需确保页面包含
+        对应的 `.image-viewer-container` 容器与样式。
+*/
 export default function imageViewer() {
   let isBigImage = false;
   let scale = 1;
@@ -9,6 +15,7 @@ export default function imageViewer() {
   let translateX = 0;
   let translateY = 0;
 
+  // 查找图像查看器容器，若不存在则退出（安全降级）
   const maskDom = document.querySelector(".image-viewer-container");
   if (!maskDom) {
     console.warn(
@@ -25,6 +32,7 @@ export default function imageViewer() {
     return;
   }
 
+  // 显示/隐藏查看器，并在显示时禁止页面滚动
   const showHandle = (isShow) => {
     document.body.style.overflow = isShow ? "hidden" : "auto";
     isShow
@@ -32,6 +40,7 @@ export default function imageViewer() {
       : maskDom.classList.remove("active");
   };
 
+  // 鼠标滚轮缩放处理
   const zoomHandle = (event) => {
     event.preventDefault();
     const rect = targetImg.getBoundingClientRect();
@@ -56,6 +65,7 @@ export default function imageViewer() {
     targetImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
   };
 
+  // 开始拖拽
   const dragStartHandle = (event) => {
     event.preventDefault();
     isMouseDown = true;
@@ -67,6 +77,7 @@ export default function imageViewer() {
   let lastTime = 0;
   const throttle = 100;
 
+  // 拖拽中（节流）
   const dragHandle = (event) => {
     if (isMouseDown) {
       const currentTime = new Date().getTime();
@@ -85,6 +96,7 @@ export default function imageViewer() {
     }
   };
 
+  // 结束拖拽
   const dragEndHandle = (event) => {
     if (isMouseDown) {
       event.stopPropagation();
@@ -99,6 +111,7 @@ export default function imageViewer() {
   targetImg.addEventListener("mouseup", dragEndHandle, { passive: false });
   targetImg.addEventListener("mouseleave", dragEndHandle, { passive: false });
 
+  // 点击遮罩关闭查看器（若不是拖拽造成的点击）
   maskDom.addEventListener("click", (event) => {
     if (!dragged) {
       isBigImage = false;

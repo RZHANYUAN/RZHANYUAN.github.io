@@ -61,13 +61,18 @@ export default function initUtils() {
     },
 
     updateScrollPercent(percent) {
-      if (this.isHasScrollPercent) {
-        const percentDom = this.backToTopButton_dom.querySelector(".percent");
-        const showButton = percent !== 0 && percent !== undefined;
-
-        this.backToTopButton_dom.classList.toggle("show", showButton);
-        percentDom.innerHTML = percent.toFixed(0);
+      if (!this.isHasScrollPercent || !this.backToTopButton_dom) {
+        return;
       }
+
+      const percentDom = this.backToTopButton_dom.querySelector(".percent");
+      if (!percentDom) {
+        return;
+      }
+
+      const showButton = percent !== 0 && percent !== undefined;
+      this.backToTopButton_dom.classList.toggle("show", showButton);
+      percentDom.innerHTML = percent.toFixed(0);
     },
 
     updatePageTopVisibility(scrollTop, clientHeight) {
@@ -191,6 +196,9 @@ export default function initUtils() {
     },
 
     toggleToolsList() {
+      if (!this.toggleButton || !this.toolsList) {
+        return;
+      }
       // Auto expand tools list if configured
       if (theme.global.side_tools && theme.global.side_tools.auto_expand) {
         this.toolsList.classList.add("show");
@@ -207,6 +215,10 @@ export default function initUtils() {
       const htmlRoot = this.html_root_dom;
       const fontAdjustPlus = this.fontAdjPlus_dom;
       const fontAdjustMinus = this.fontAdMinus_dom;
+
+      if (!fontAdjustPlus || !fontAdjustMinus) {
+        return;
+      }
 
       const fontSize = document.defaultView.getComputedStyle(
         document.body,

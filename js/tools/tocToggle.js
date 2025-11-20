@@ -1,5 +1,8 @@
-/* main function */
-
+/*
+  文件: source/js/tools/tocToggle.js
+  目的: 文章目录折叠/展开控制模块。管理侧边栏目录展示状态并保存到主题状态。
+  说明: 导出 `initTocToggle()` 以便在 DOMContentLoaded 与 swup 页面切换时初始化。
+*/
 import { main } from "../main.js";
 
 export function initTocToggle() {
@@ -14,6 +17,7 @@ export function initTocToggle() {
 
     isOpenPageAside: false,
 
+    // 初始化目录折叠按钮的点击事件
     initToggleBarButton() {
       this.toggleBar &&
         this.toggleBar.addEventListener("click", () => {
@@ -24,6 +28,7 @@ export function initTocToggle() {
         });
     },
 
+    // 安全切换元素的 class（仅当元素存在时）
     toggleClassName(element, className, condition) {
       if (element) {
         element.classList.toggle(className, condition);
