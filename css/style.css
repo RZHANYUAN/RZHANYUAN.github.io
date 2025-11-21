@@ -1537,6 +1537,168 @@ pre .deletion {
     font-size: 2.52rem;
   }
 }
+.home-banner-container .content .banner-music-player {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0 1.5rem;
+  color: var(--home-banner-text-color);
+}
+@media (max-width: 768px) {
+  .home-banner-container .content .banner-music-player {
+    padding: 0 1rem;
+  }
+}
+.home-banner-container .content .banner-music-player .banner-music-card {
+  width: 100%;
+  max-width: 1200px;
+  padding: 2rem 2.5rem;
+  border: 1px solid var(--home-banner-icons-container-border-color);
+  border-radius: 32px;
+  background-color: var(--background-color-transparent-40);
+  box-shadow: 0 25px 80px rgba(0,0,0,0.35);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  color: inherit;
+}
+@media (max-width: 768px) {
+  .home-banner-container .content .banner-music-player .banner-music-card {
+    padding: 1.5rem;
+  }
+}
+@media (max-width: 640px) {
+  .home-banner-container .content .banner-music-player .banner-music-card {
+    padding: 1.25rem;
+  }
+}
+.home-banner-container .content .banner-music-player .banner-music-header {
+  width: 100%;
+}
+@media (max-width: 640px) {
+  .home-banner-container .content .banner-music-player .banner-music-header {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+.home-banner-container .content .banner-music-player .banner-music-cover {
+  width: 130px;
+  height: 130px;
+  min-width: 110px;
+  overflow: hidden;
+  border-radius: 28px;
+  box-shadow: 0 10px 35px rgba(0,0,0,0.35);
+}
+.home-banner-container .content .banner-music-player .banner-music-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+@media (max-width: 640px) {
+  .home-banner-container .content .banner-music-player .banner-music-cover {
+    width: 110px;
+    height: 110px;
+  }
+}
+.home-banner-container .content .banner-music-player .banner-music-heading .banner-music-title {
+  margin: 0;
+  font-family: 'Geist Variable', sans-serif;
+  letter-spacing: 0.02em;
+}
+.home-banner-container .content .banner-music-player .banner-music-heading .banner-music-artist {
+  margin: 0;
+  font-size: 0.95rem;
+}
+.home-banner-container .content .banner-music-player .banner-music-heading .banner-music-counter {
+  font-family: 'Geist Variable', sans-serif;
+}
+.home-banner-container .content .banner-music-player .banner-music-progress .banner-music-progress-bar {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background-color: rgba(255,255,255,0.22);
+  overflow: hidden;
+  cursor: pointer;
+}
+.home-banner-container .content .banner-music-player .banner-music-progress .banner-music-progress-bar .banner-music-progress-track {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+}
+.home-banner-container .content .banner-music-player .banner-music-progress .banner-music-progress-bar .banner-music-progress-value {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.9), var(--home-banner-text-color));
+  transition: width 0.1s ease;
+}
+.home-banner-container .content .banner-music-player .banner-music-progress .banner-music-progress-bar .banner-music-progress-thumb {
+  position: absolute;
+  top: 50%;
+  left: 0%;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--home-banner-text-color);
+  box-shadow: 0 6px 25px rgba(0,0,0,0.35);
+  transition: left 0.1s linear;
+}
+.home-banner-container .content .banner-music-player .banner-music-controls .banner-music-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.45);
+  background-color: transparent;
+  color: var(--home-banner-text-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+.home-banner-container .content .banner-music-player .banner-music-controls .banner-music-btn:hover {
+  background-color: rgba(255,255,255,0.15);
+  transform: translateY(-2px);
+}
+.home-banner-container .content .banner-music-player .banner-music-controls .banner-music-btn.primary {
+  width: 72px;
+  height: 72px;
+  font-size: 1.15rem;
+  border: none;
+  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.7));
+  color: #111;
+  box-shadow: 0 20px 45px rgba(0,0,0,0.35);
+}
+.home-banner-container .content .banner-music-player .banner-music-controls .banner-music-btn .pause-icon {
+  display: none;
+}
+.home-banner-container .content .banner-music-player .banner-music-controls .banner-music-btn.is-playing {
+  background: linear-gradient(135deg, rgba(17,17,17,0.92), rgba(17,17,17,0.8));
+  color: var(--home-banner-text-color);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.45);
+}
+.home-banner-container .content .banner-music-player .banner-music-controls .banner-music-btn.is-playing .play-icon {
+  display: none;
+}
+.home-banner-container .content .banner-music-player .banner-music-controls .banner-music-btn.is-playing .pause-icon {
+  display: inline-block;
+}
+@media (max-width: 640px) {
+  .home-banner-container .content .banner-music-player .banner-music-controls {
+    flex-wrap: wrap;
+  }
+}
+.home-banner-container .content .banner-music-player .banner-music-note {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: inherit;
+  margin: 0 auto;
+}
 .image-viewer-container {
   position: fixed;
   left: 0;
