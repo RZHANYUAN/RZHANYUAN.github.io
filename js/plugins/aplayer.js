@@ -169,6 +169,18 @@
         }
       }, 100);
     });
+    
+    // 监听 swupjs 的自定义事件（备选）
+    document.addEventListener('swup:contentReplaced', function() {
+      if (window.aplayerInstance) {
+        savePlayerState(window.aplayerInstance);
+      }
+      setTimeout(function() {
+        if (document.getElementById('aplayer')) {
+          initPlayer();
+        }
+      }, 100);
+    });
   }
 
   // 立即初始化播放器

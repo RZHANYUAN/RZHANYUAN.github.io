@@ -422,8 +422,19 @@
     
     
     <div class="content mt-8 flex flex-col justify-center items-center transition-fade-down">
+        <style>
+            #banner_line {
+                white-space: normal;
+                word-break: break-word;
+                overflow-wrap: anywhere;
+                display: block;
+                width: 100%;
+                padding: 0 1rem;
+                font-size: calc(1.5 * 2.8rem);
+            }
+        </style>
         <div class="description flex justify-center items-center w-screen font-medium text-center">
-            <span id="banner_line" style="white-space:normal;word-break:break-word;overflow-wrap:anywhere;display:block;width:100%;font-size: calc(1.2 * 2.8rem);">
+            <span id="banner_line">
                 花自飘零水自流，一种相思，两处闲愁。
                 
             </span>
@@ -533,9 +544,17 @@
         </div>
 
         <script data-swup-reload-script>
-            // 音乐播放器实现 - 专注于基本功能
+            // 音乐播放器实现 - 支持跨页面状态保持
             (function() {
-                // 创建全局播放器对象
+                // 检查是否已创建播放器，如果已创建则只需重新绑定 DOM 元素
+                if (window.bannerMusicPlayer && document.querySelector('[data-music-toggle]')) {
+                    // 页面切换回主页时，只需重新绑定 DOM 元素和事件
+                    window.bannerMusicPlayer.rebindDOM();
+                    window.bannerMusicPlayer.updateVolumeIcon();
+                    return;
+                }
+                
+                // 首次创建播放器对象
                 window.bannerMusicPlayer = {
                     audio: null,
                     playButton: null,
@@ -547,41 +566,160 @@
                     volumeSlider: null,
                     isPlaying: false,
                     isDragging: false,
-                    // 存储事件处理器引用，便于后续移除
                     eventHandlers: {},
                     
-                    // 清理现有事件监听器
-                    cleanup: function() {
-                        // 移除全局事件监听器
-                        if (this.eventHandlers.mousemove) {
-                            document.removeEventListener('mousemove', this.eventHandlers.mousemove);
-                        }
-                        if (this.eventHandlers.mouseup) {
-                            document.removeEventListener('mouseup', this.eventHandlers.mouseup);
-                        }
-                        if (this.eventHandlers.mouseleave) {
-                            document.removeEventListener('mouseleave', this.eventHandlers.mouseleave);
-                        }
-                        if (this.eventHandlers.touchmove) {
-                            document.removeEventListener('touchmove', this.eventHandlers.touchmove);
-                        }
-                        if (this.eventHandlers.touchend) {
-                            document.removeEventListener('touchend', this.eventHandlers.touchend);
+                    // 重新绑定 DOM 元素（用于页面切换回主页时）
+                    rebindDOM: function() {
+                        // 重新获取 DOM 元素引用
+                        this.playButton = document.querySelector('[data-music-toggle]');
+                        this.progress = document.querySelector('[data-music-progress]');
+                        this.progressBar = document.querySelector('[data-music-bar]');
+                        this.currentTimeElement = document.querySelector('[data-music-current]');
+                        this.durationElement = document.querySelector('[data-music-duration]');
+                        this.volumeIcon = document.getElementById('volumeIcon');
+                        this.volumeSlider = document.getElementById('volumeSlider');
+                        
+                        var self = this;
+                        
+                        // 重新绑定播放/暂停按钮事件
+                        if (this.playButton) {
+                            // 移除旧的事件监听器
+                            const oldPlayButton = this.playButton.cloneNode(true);
+                            this.playButton.parentNode.replaceChild(oldPlayButton, this.playButton);
+                            this.playButton = oldPlayButton;
+                            
+                            this.playButton.addEventListener('click', function() {
+                                self.togglePlayPause();
+                            });
                         }
                         
-                        // 重置事件处理器引用
-                        this.eventHandlers = {};
+                        // 重新绑定音量控制事件
+                        if (this.volumeSlider) {
+                            // 移除旧事件
+                            const oldVolumeSlider = this.volumeSlider.cloneNode(true);
+                            this.volumeSlider.parentNode.replaceChild(oldVolumeSlider, this.volumeSlider);
+                            this.volumeSlider = oldVolumeSlider;
+                            
+                            this.volumeSlider.addEventListener('input', function() {
+                                self.audio.volume = parseFloat(this.value);
+                                self.updateVolumeIcon();
+                            });
+                        }
                         
-                        // 重置状态
-                        this.isPlaying = false;
-                        this.isDragging = false;
+                        if (this.volumeIcon) {
+                            const oldVolumeIcon = this.volumeIcon.cloneNode(true);
+                            this.volumeIcon.parentNode.replaceChild(oldVolumeIcon, this.volumeIcon);
+                            this.volumeIcon = oldVolumeIcon;
+                            
+                            this.volumeIcon.addEventListener('click', function() {
+                                self.audio.muted = !self.audio.muted;
+                                self.updateVolumeIcon();
+                            });
+                        }
+                        
+                        // 重新绑定进度条事件
+                        if (this.progressBar) {
+                            const oldProgressBar = this.progressBar.cloneNode(true);
+                            this.progressBar.parentNode.replaceChild(oldProgressBar, this.progressBar);
+                            this.progressBar = oldProgressBar;
+                            const thumb = document.querySelector('[data-music-thumb]');
+                            
+                            function updateProgressFromPosition(e) {
+                                if (!self.audio || !self.audio.duration) return;
+                                const rect = self.progressBar.getBoundingClientRect();
+                                let pos = (e.clientX - rect.left) / rect.width;
+                                pos = Math.max(0, Math.min(1, pos));
+                                if (self.progress) {
+                                    self.progress.style.width = pos * 100 + '%';
+                                }
+                                if (thumb) {
+                                    const thumbWidth = thumb.offsetWidth || 16;
+                                    const thumbPos = (pos * rect.width) - (thumbWidth / 2);
+                                    const maxPos = rect.width - thumbWidth;
+                                    thumb.style.left = Math.max(0, Math.min(maxPos, thumbPos)) + 'px';
+                                }
+                                return pos;
+                            }
+                            
+                            this.progressBar.addEventListener('click', function(e) {
+                                if (!self.isDragging) {
+                                    const pos = updateProgressFromPosition(e);
+                                    if (self.audio && self.audio.duration) {
+                                        self.audio.currentTime = pos * self.audio.duration;
+                                    }
+                                }
+                            });
+                            
+                            const startDragging = function(e) {
+                                self.isDragging = true;
+                                self.progressBar.classList.add('dragging');
+                                updateProgressFromPosition(e);
+                                e.preventDefault();
+                                e.stopPropagation();
+                            };
+                            
+                            const drag = function(e) {
+                                if (self.isDragging) {
+                                    updateProgressFromPosition(e);
+                                }
+                            };
+                            
+                            const endDragging = function(e) {
+                                if (self.isDragging && self.audio && self.audio.duration) {
+                                    self.progressBar.classList.remove('dragging');
+                                    const wasPaused = self.audio.paused;
+                                    let newPosition;
+                                    if (e) {
+                                        const rect = self.progressBar.getBoundingClientRect();
+                                        newPosition = (e.clientX - rect.left) / rect.width;
+                                        newPosition = Math.max(0, Math.min(1, newPosition));
+                                    } else {
+                                        const width = parseFloat(self.progress.style.width || '0') / 100;
+                                        newPosition = width;
+                                    }
+                                    self.audio.currentTime = newPosition * self.audio.duration;
+                                    self.isDragging = false;
+                                    if (wasPaused) {
+                                        setTimeout(function() {
+                                            self.audio.pause();
+                                            self.isPlaying = false;
+                                            self.updatePlayButton();
+                                        }, 50);
+                                    }
+                                }
+                            };
+                            
+                            this.progressBar.addEventListener('mousedown', startDragging);
+                            if (thumb) {
+                                thumb.addEventListener('mousedown', startDragging);
+                            }
+                            
+                            // 重新绑定全局事件
+                            if (this.eventHandlers.mousemove) {
+                                document.removeEventListener('mousemove', this.eventHandlers.mousemove);
+                            }
+                            if (this.eventHandlers.mouseup) {
+                                document.removeEventListener('mouseup', this.eventHandlers.mouseup);
+                            }
+                            if (this.eventHandlers.mouseleave) {
+                                document.removeEventListener('mouseleave', this.eventHandlers.mouseleave);
+                            }
+                            
+                            this.eventHandlers.mousemove = drag;
+                            this.eventHandlers.mouseup = function(e) { endDragging(e); };
+                            this.eventHandlers.mouseleave = function(e) { endDragging(e); };
+                            
+                            document.addEventListener('mousemove', this.eventHandlers.mousemove);
+                            document.addEventListener('mouseup', this.eventHandlers.mouseup);
+                            document.addEventListener('mouseleave', this.eventHandlers.mouseleave);
+                        }
+                        
+                        this.updateProgress();
+                        this.updateTimeDisplay();
                     },
                     
                     // 初始化播放器
                     init: function() {
-                        // 先清理可能存在的旧实例和事件监听器
-                        this.cleanup();
-                        
                         // 获取DOM元素引用
                         this.playButton = document.querySelector('[data-music-toggle]');
                         this.progress = document.querySelector('[data-music-progress]');
@@ -591,71 +729,56 @@
                         this.volumeIcon = document.getElementById('volumeIcon');
                         this.volumeSlider = document.getElementById('volumeSlider');
                         
-                        // 创建音频元素并设置固定的音频路径
+                        // 创建音频元素
                         this.audio = new Audio();
-                        // 使用相对路径，确保网站部署后能正确访问
                         this.audio.src = '/css/layout/music/July-Beyond the Memory.mp3';
                         
                         // 设置默认音量
                         if (this.volumeSlider) {
                             this.audio.volume = parseFloat(this.volumeSlider.value);
                         } else {
-                            this.audio.volume = 0.7; // 默认音量70%
+                            this.audio.volume = 0.7;
                         }
+                        
+                        var self = this;
                         
                         // 绑定播放/暂停按钮事件
                         if (this.playButton) {
-                          var self = this;
-                          this.playButton.addEventListener('click', function() {
-                            self.togglePlayPause();
-                          });
+                            this.playButton.addEventListener('click', function() {
+                                self.togglePlayPause();
+                            });
                         }
                         
                         // 绑定音频事件
                         if (this.audio) {
-                          var self = this;
-                          
-                          // 元数据加载完成
-                          this.audio.addEventListener('loadedmetadata', function() {
-                            self.updateTimeDisplay();
-                          });
-                          
-                          // 播放时间更新
-                          this.audio.addEventListener('timeupdate', function() {
-                            if (!self.isDragging) {
-                              self.updateProgress();
-                            }
-                            self.updateTimeDisplay();
-                          });
-                          
-                          // 播放开始
-                          this.audio.addEventListener('play', function() {
-                            self.isPlaying = true;
-                            self.updatePlayButton();
-                          });
-                          
-                          // 暂停
-                          this.audio.addEventListener('pause', function() {
-                            self.isPlaying = false;
-                            self.updatePlayButton();
-                          });
-                          
-                          // 播放结束
-                          this.audio.addEventListener('ended', function() {
-                            self.isPlaying = false;
-                            self.updatePlayButton();
-                          });
-                          
-                          // 音频加载错误处理
-                          this.audio.addEventListener('error', function(e) {
-                            console.error('音频加载错误:', e);
-                            console.log('音频源:', self.audio.src);
-                          });
+                            this.audio.addEventListener('loadedmetadata', function() {
+                                self.updateTimeDisplay();
+                            });
+                            this.audio.addEventListener('timeupdate', function() {
+                                if (!self.isDragging) {
+                                    self.updateProgress();
+                                }
+                                self.updateTimeDisplay();
+                            });
+                            this.audio.addEventListener('play', function() {
+                                self.isPlaying = true;
+                                self.updatePlayButton();
+                            });
+                            this.audio.addEventListener('pause', function() {
+                                self.isPlaying = false;
+                                self.updatePlayButton();
+                            });
+                            this.audio.addEventListener('ended', function() {
+                                self.isPlaying = false;
+                                self.updatePlayButton();
+                            });
+                            this.audio.addEventListener('error', function(e) {
+                                console.error('音频加载错误:', e);
+                            });
                         }
                         
                         // 绑定音量控制事件
                         if (this.volumeSlider) {
-                            var self = this;
                             this.volumeSlider.addEventListener('input', function() {
                                 self.audio.volume = parseFloat(this.value);
                                 self.updateVolumeIcon();
@@ -663,205 +786,149 @@
                         }
                         
                         if (this.volumeIcon) {
-                            var self = this;
                             this.volumeIcon.addEventListener('click', function() {
-                                // 静音/取消静音
                                 self.audio.muted = !self.audio.muted;
                                 self.updateVolumeIcon();
                             });
                         }
                         
-                        // 绑定进度条事件 - 完善的拖动功能
+                        // 绑定进度条事件
                         if (this.progressBar) {
-                          var self = this;
-                          const thumb = document.querySelector('[data-music-thumb]');
-                          
-                          // 进度条更新辅助函数
-                          function updateProgressFromPosition(e) {
-                            if (!self.audio || !self.audio.duration) return;
+                            const thumb = document.querySelector('[data-music-thumb]');
                             
-                            const rect = self.progressBar.getBoundingClientRect();
-                            let pos = (e.clientX - rect.left) / rect.width;
-                            // 限制在0-1范围内
-                            pos = Math.max(0, Math.min(1, pos));
-                            
-                            // 更新进度条显示
-                            if (self.progress) {
-                              self.progress.style.width = pos * 100 + '%';
-                            }
-                            
-                            // 更新滑块位置
-                            if (thumb) {
-                              // 减去滑块一半宽度，使其居中在进度位置
-                              const thumbWidth = thumb.offsetWidth || 16;
-                              const thumbPos = (pos * rect.width) - (thumbWidth / 2);
-                              const maxPos = rect.width - thumbWidth;
-                              thumb.style.left = Math.max(0, Math.min(maxPos, thumbPos)) + 'px';
-                            }
-                            
-                            return pos;
-                          }
-                          
-                          // 点击进度条跳转
-                          this.progressBar.addEventListener('click', function(e) {
-                            if (!self.isDragging) {
-                              const pos = updateProgressFromPosition(e);
-                              if (self.audio && self.audio.duration) {
-                                self.audio.currentTime = pos * self.audio.duration;
-                              }
-                            }
-                          });
-                          
-                          // 鼠标按下事件 - 开始拖动
-                          const startDragging = function(e) {
-                            self.isDragging = true;
-                            // 添加拖动类，便于样式调整
-                            self.progressBar.classList.add('dragging');
-                            // 更新进度条位置
-                            updateProgressFromPosition(e);
-                            // 阻止默认行为和冒泡，避免拖动时选中文本
-                            e.preventDefault();
-                            e.stopPropagation();
-                          };
-                          
-                          // 鼠标移动事件 - 拖动中
-                          const drag = function(e) {
-                            if (self.isDragging) {
-                              updateProgressFromPosition(e);
-                            }
-                          };
-                          
-                          // 鼠标释放事件 - 结束拖动
-                          const endDragging = function(e) {
-                            if (self.isDragging && self.audio && self.audio.duration) {
-                              // 移除拖动类
-                              self.progressBar.classList.remove('dragging');
-                              
-                              // 记录拖动前的播放状态
-                              const wasPaused = self.audio.paused;
-                               
-                              // 使用鼠标位置计算准确的播放位置
-                              let newPosition;
-                              if (e) {
-                                // 重新计算位置，确保使用最新的鼠标位置
+                            function updateProgressFromPosition(e) {
+                                if (!self.audio || !self.audio.duration) return;
                                 const rect = self.progressBar.getBoundingClientRect();
-                                newPosition = (e.clientX - rect.left) / rect.width;
-                                // 限制在0-1范围内
-                                newPosition = Math.max(0, Math.min(1, newPosition));
-                              } else {
-                                // 当没有事件对象时，使用当前进度条宽度
-                                const width = parseFloat(self.progress.style.width || '0') / 100;
-                                newPosition = width;
-                              }
-                               
-                              // 确保设置为有效的时间位置
-                              const newTime = newPosition * self.audio.duration;
-                              console.log('设置音乐位置:', newTime, '秒 (', newPosition * 100, '%)');
-                              self.audio.currentTime = newTime;
-                               
-                              // 更新拖动状态
-                              self.isDragging = false;
-                               
-                              // 如果拖动前是暂停状态，拖动后继续保持暂停
-                              if (wasPaused) {
-                                // 使用setTimeout确保currentTime更新完成后再暂停
-                                setTimeout(function() {
-                                  self.audio.pause();
-                                  self.isPlaying = false;
-                                  self.updatePlayButton();
-                                }, 50);
-                              }
+                                let pos = (e.clientX - rect.left) / rect.width;
+                                pos = Math.max(0, Math.min(1, pos));
+                                if (self.progress) {
+                                    self.progress.style.width = pos * 100 + '%';
+                                }
+                                if (thumb) {
+                                    const thumbWidth = thumb.offsetWidth || 16;
+                                    const thumbPos = (pos * rect.width) - (thumbWidth / 2);
+                                    const maxPos = rect.width - thumbWidth;
+                                    thumb.style.left = Math.max(0, Math.min(maxPos, thumbPos)) + 'px';
+                                }
+                                return pos;
                             }
-                          };
-                          
-                          // 为进度条和滑块添加鼠标按下事件
-                          this.progressBar.addEventListener('mousedown', startDragging);
-                          if (thumb) {
-                            thumb.addEventListener('mousedown', startDragging);
-                          }
-                          
-                          // 全局鼠标事件 - 存储引用以便后续移除
-                          this.eventHandlers.mousemove = drag;
-                          document.addEventListener('mousemove', drag);
-                          
-                          this.eventHandlers.mouseup = function(e) {
-                            endDragging(e);
-                          };
-                          document.addEventListener('mouseup', this.eventHandlers.mouseup);
-                          
-                          // 处理鼠标离开窗口的情况
-                          this.eventHandlers.mouseleave = function(e) {
-                            endDragging(e);
-                          };
-                          document.addEventListener('mouseleave', this.eventHandlers.mouseleave);
-                          
-                          // 触摸事件支持
-                          this.progressBar.addEventListener('touchstart', function(e) {
-                            // 阻止默认的触摸行为（如滚动）
-                            e.preventDefault();
-                            if (e.touches && e.touches[0]) {
-                              startDragging(e.touches[0]);
+                            
+                            this.progressBar.addEventListener('click', function(e) {
+                                if (!self.isDragging) {
+                                    const pos = updateProgressFromPosition(e);
+                                    if (self.audio && self.audio.duration) {
+                                        self.audio.currentTime = pos * self.audio.duration;
+                                    }
+                                }
+                            });
+                            
+                            const startDragging = function(e) {
+                                self.isDragging = true;
+                                self.progressBar.classList.add('dragging');
+                                updateProgressFromPosition(e);
+                                e.preventDefault();
+                                e.stopPropagation();
+                            };
+                            
+                            const drag = function(e) {
+                                if (self.isDragging) {
+                                    updateProgressFromPosition(e);
+                                }
+                            };
+                            
+                            const endDragging = function(e) {
+                                if (self.isDragging && self.audio && self.audio.duration) {
+                                    self.progressBar.classList.remove('dragging');
+                                    const wasPaused = self.audio.paused;
+                                    let newPosition;
+                                    if (e) {
+                                        const rect = self.progressBar.getBoundingClientRect();
+                                        newPosition = (e.clientX - rect.left) / rect.width;
+                                        newPosition = Math.max(0, Math.min(1, newPosition));
+                                    } else {
+                                        const width = parseFloat(self.progress.style.width || '0') / 100;
+                                        newPosition = width;
+                                    }
+                                    self.audio.currentTime = newPosition * self.audio.duration;
+                                    self.isDragging = false;
+                                    if (wasPaused) {
+                                        setTimeout(function() {
+                                            self.audio.pause();
+                                            self.isPlaying = false;
+                                            self.updatePlayButton();
+                                        }, 50);
+                                    }
+                                }
+                            };
+                            
+                            this.progressBar.addEventListener('mousedown', startDragging);
+                            if (thumb) {
+                                thumb.addEventListener('mousedown', startDragging);
                             }
-                          });
-                          
-                          this.eventHandlers.touchmove = function(e) {
-                            if (self.isDragging && e.touches && e.touches[0]) {
-                              e.preventDefault();
-                              drag(e.touches[0]);
+                            
+                            this.eventHandlers.mousemove = drag;
+                            this.eventHandlers.mouseup = function(e) { endDragging(e); };
+                            this.eventHandlers.mouseleave = function(e) { endDragging(e); };
+                            
+                            document.addEventListener('mousemove', this.eventHandlers.mousemove);
+                            document.addEventListener('mouseup', this.eventHandlers.mouseup);
+                            document.addEventListener('mouseleave', this.eventHandlers.mouseleave);
+                            
+                            if (this.eventHandlers.touchmove) {
+                                document.removeEventListener('touchmove', this.eventHandlers.touchmove);
+                                document.removeEventListener('touchend', this.eventHandlers.touchend);
                             }
-                          };
-                          document.addEventListener('touchmove', this.eventHandlers.touchmove);
-                          
-                          this.eventHandlers.touchend = function(e) {
-                            if (e.changedTouches && e.changedTouches[0]) {
-                              endDragging(e.changedTouches[0]);
-                            }
-                          };
-                          document.addEventListener('touchend', this.eventHandlers.touchend);
+                            
+                            this.progressBar.addEventListener('touchstart', function(e) {
+                                e.preventDefault();
+                                if (e.touches && e.touches[0]) {
+                                    startDragging(e.touches[0]);
+                                }
+                            });
+                            
+                            this.eventHandlers.touchmove = function(e) {
+                                if (self.isDragging && e.touches && e.touches[0]) {
+                                    e.preventDefault();
+                                    drag(e.touches[0]);
+                                }
+                            };
+                            
+                            this.eventHandlers.touchend = function(e) {
+                                if (e.changedTouches && e.changedTouches[0]) {
+                                    endDragging(e.changedTouches[0]);
+                                }
+                            };
+                            
+                            document.addEventListener('touchmove', this.eventHandlers.touchmove);
+                            document.addEventListener('touchend', this.eventHandlers.touchend);
                         }
                         
-                        // 预加载音频
                         this.audio.load();
                     },
                     
-                    // 切换播放/暂停
                     togglePlayPause: function() {
                         if (!this.audio) return;
-                        
                         if (this.isPlaying) {
-                          this.audio.pause();
+                            this.audio.pause();
                         } else {
-                          // 立即更新播放状态，给用户即时反馈
-                          this.isPlaying = true;
-                          this.updatePlayButton();
-                          
-                          // 确保音频已加载
-                          if (this.audio.readyState < 2) {
-                            // 如果音频尚未加载足够数据，先加载
-                            this.audio.load();
-                          }
-                          
-                          // 立即播放音乐，使用try-catch确保在各种环境下都能正常工作
-                          try {
-                            this.audio.play();
-                          } catch (e) {
-                            // 如果自动播放失败，尝试在用户交互上下文中再次播放
-                            console.log('音频播放尝试:', e.message);
-                            // 保持UI状态为播放中，因为用户已明确点击了播放按钮
-                          }
+                            this.isPlaying = true;
+                            this.updatePlayButton();
+                            if (this.audio.readyState < 2) {
+                                this.audio.load();
+                            }
+                            try {
+                                this.audio.play();
+                            } catch (e) {
+                                console.log('音频播放尝试:', e.message);
+                            }
                         }
                     },
                     
-                    // 更新音量图标
                     updateVolumeIcon: function() {
                         if (!this.volumeIcon) return;
-                        
                         const icon = this.volumeIcon.querySelector('i');
                         if (!icon) return;
-                        
-                        // 移除所有音量相关图标类
                         icon.className = 'fa-solid fa-fw fa-lg';
-                        
                         if (this.audio.muted || this.audio.volume === 0) {
                             icon.classList.add('fa-volume-xmark');
                         } else if (this.audio.volume < 0.5) {
@@ -871,92 +938,77 @@
                         }
                     },
                     
-                    // 更新播放按钮状态
                     updatePlayButton: function() {
                         if (!this.playButton) return;
-                        
-                        // 更新播放按钮图标
                         const playIcon = this.playButton.querySelector('.play-icon');
                         const pauseIcon = this.playButton.querySelector('.pause-icon');
-                        
                         if (playIcon && pauseIcon) {
-                          if (this.isPlaying) {
-                            playIcon.style.display = 'none';
-                            pauseIcon.style.display = 'inline-block';
-                          } else {
-                            playIcon.style.display = 'inline-block';
-                            pauseIcon.style.display = 'none';
-                          }
+                            if (this.isPlaying) {
+                                playIcon.style.display = 'none';
+                                pauseIcon.style.display = 'inline-block';
+                            } else {
+                                playIcon.style.display = 'inline-block';
+                                pauseIcon.style.display = 'none';
+                            }
                         }
                     },
                     
-                    // 更新进度条
                     updateProgress: function() {
-                        // 只有在没有拖动时才自动更新进度条
                         if (this.isDragging || !this.audio || !this.progress || !this.audio.duration || isNaN(this.audio.duration)) return;
-                        
                         var progress = (this.audio.currentTime / this.audio.duration) * 100;
                         this.progress.style.width = progress + '%';
-                        
-                        // 同时更新滑块位置
                         const thumb = document.querySelector('[data-music-thumb]');
                         if (thumb && this.progressBar) {
-                          const rect = this.progressBar.getBoundingClientRect();
-                          const thumbWidth = thumb.offsetWidth || 16;
-                          const thumbPos = (progress / 100 * rect.width) - (thumbWidth / 2);
-                          const maxPos = rect.width - thumbWidth;
-                          thumb.style.left = Math.max(0, Math.min(maxPos, thumbPos)) + 'px';
+                            const rect = this.progressBar.getBoundingClientRect();
+                            const thumbWidth = thumb.offsetWidth || 16;
+                            const thumbPos = (progress / 100 * rect.width) - (thumbWidth / 2);
+                            const maxPos = rect.width - thumbWidth;
+                            thumb.style.left = Math.max(0, Math.min(maxPos, thumbPos)) + 'px';
                         }
                     },
                     
-                    // 更新时间显示
                     updateTimeDisplay: function() {
                         if (!this.audio || !this.currentTimeElement || !this.durationElement) return;
-                        
                         this.currentTimeElement.textContent = this.formatTime(this.audio.currentTime);
-                        
                         if (this.audio.duration && !isNaN(this.audio.duration)) {
-                          this.durationElement.textContent = this.formatTime(this.audio.duration);
+                            this.durationElement.textContent = this.formatTime(this.audio.duration);
                         }
                     },
                     
-                    // 格式化时间
                     formatTime: function(seconds) {
                         if (!seconds || isNaN(seconds)) return '00:00';
-                        
                         var minutes = Math.floor(seconds / 60);
                         var secs = Math.floor(seconds % 60);
-                        
                         return (minutes < 10 ? '0' : '') + minutes + ':' + (secs < 10 ? '0' : '') + secs;
                     }
                 };
                 
-                // 页面加载完成后初始化播放器
+                // 初始化
                 if (document.addEventListener) {
-                  document.addEventListener('DOMContentLoaded', function() {
-                    window.bannerMusicPlayer.init();
-                    // 初始化音量图标
-                    window.bannerMusicPlayer.updateVolumeIcon();
-                  });
+                    document.addEventListener('DOMContentLoaded', function() {
+                        window.bannerMusicPlayer.init();
+                        window.bannerMusicPlayer.updateVolumeIcon();
+                    });
                 } else if (document.attachEvent) {
-                  // 兼容旧版IE
-                  document.attachEvent('onreadystatechange', function() {
-                    if (document.readyState === 'complete') {
-                      window.bannerMusicPlayer.init();
-                      // 初始化音量图标
-                      window.bannerMusicPlayer.updateVolumeIcon();
-                    }
-                  });
+                    document.attachEvent('onreadystatechange', function() {
+                        if (document.readyState === 'complete') {
+                            window.bannerMusicPlayer.init();
+                            window.bannerMusicPlayer.updateVolumeIcon();
+                        }
+                    });
                 }
                 
-                // 防止其他交互影响音乐播放
-                document.addEventListener('click', function(e) {
-                  // 如果点击的不是音乐播放器的暂停按钮，就不做任何处理
-                  // 这样其他所有点击都不会影响音乐播放
-                  if (!e.target.closest('[data-music-toggle]')) {
-                    // 什么都不做，音乐继续播放
-                  }
-                });
+                // 监听 swup 页面切换事件
+                try {
+                    if (window.swup) {
+                        window.swup.hooks.on('page:view', function() {
+                            if (window.bannerMusicPlayer && document.querySelector('[data-music-progress]')) {
+                                window.bannerMusicPlayer.rebindDOM();
+                                window.bannerMusicPlayer.updateVolumeIcon();
+                            }
+                        });
+                    }
+                } catch (e) {}
             })();
         </script>
 
