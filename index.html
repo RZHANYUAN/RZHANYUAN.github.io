@@ -547,9 +547,41 @@
                     volumeSlider: null,
                     isPlaying: false,
                     isDragging: false,
+                    // 存储事件处理器引用，便于后续移除
+                    eventHandlers: {},
+                    
+                    // 清理现有事件监听器
+                    cleanup: function() {
+                        // 移除全局事件监听器
+                        if (this.eventHandlers.mousemove) {
+                            document.removeEventListener('mousemove', this.eventHandlers.mousemove);
+                        }
+                        if (this.eventHandlers.mouseup) {
+                            document.removeEventListener('mouseup', this.eventHandlers.mouseup);
+                        }
+                        if (this.eventHandlers.mouseleave) {
+                            document.removeEventListener('mouseleave', this.eventHandlers.mouseleave);
+                        }
+                        if (this.eventHandlers.touchmove) {
+                            document.removeEventListener('touchmove', this.eventHandlers.touchmove);
+                        }
+                        if (this.eventHandlers.touchend) {
+                            document.removeEventListener('touchend', this.eventHandlers.touchend);
+                        }
+                        
+                        // 重置事件处理器引用
+                        this.eventHandlers = {};
+                        
+                        // 重置状态
+                        this.isPlaying = false;
+                        this.isDragging = false;
+                    },
                     
                     // 初始化播放器
                     init: function() {
+                        // 先清理可能存在的旧实例和事件监听器
+                        this.cleanup();
+                        
                         // 获取DOM元素引用
                         this.playButton = document.querySelector('[data-music-toggle]');
                         this.progress = document.querySelector('[data-music-progress]');
@@ -590,7 +622,9 @@
                           
                           // 播放时间更新
                           this.audio.addEventListener('timeupdate', function() {
-                            self.updateProgress();
+                            if (!self.isDragging) {
+                              self.updateProgress();
+                            }
                             self.updateTimeDisplay();
                           });
                           
@@ -608,20 +642,14 @@
                           
                           // 播放结束
                           this.audio.addEventListener('ended', function() {
-                            // 尝试播放，处理可能的自动播放限制
-                            var self = this;
-                            var playPromise = this.audio.play();
-                            
-                            if (playPromise !== undefined) {
-                              playPromise.catch(function(error) {
-                                console.warn('播放失败，需要用户交互:', error);
-                                // 如果播放失败，恢复按钮状态
-                                self.isPlaying = false;
-                                self.updatePlayButton();
-                              });
-                            }
                             self.isPlaying = false;
                             self.updatePlayButton();
+                          });
+                          
+                          // 音频加载错误处理
+                          this.audio.addEventListener('error', function(e) {
+                            console.error('音频加载错误:', e);
+                            console.log('音频源:', self.audio.src);
                           });
                         }
                         
@@ -643,7 +671,7 @@
                             });
                         }
                         
-                        // 绑定进度条事件
+                        // 绑定进度条事件 - 完善的拖动功能
                         if (this.progressBar) {
                           var self = this;
                           const thumb = document.querySelector('[data-music-thumb]');
@@ -662,6 +690,15 @@
                               self.progress.style.width = pos * 100 + '%';
                             }
                             
+                            // 更新滑块位置
+                            if (thumb) {
+                              // 减去滑块一半宽度，使其居中在进度位置
+                              const thumbWidth = thumb.offsetWidth || 16;
+                              const thumbPos = (pos * rect.width) - (thumbWidth / 2);
+                              const maxPos = rect.width - thumbWidth;
+                              thumb.style.left = Math.max(0, Math.min(maxPos, thumbPos)) + 'px';
+                            }
+                            
                             return pos;
                           }
                           
@@ -669,13 +706,19 @@
                           this.progressBar.addEventListener('click', function(e) {
                             if (!self.isDragging) {
                               const pos = updateProgressFromPosition(e);
-                              self.audio.currentTime = pos * self.audio.duration;
+                              if (self.audio && self.audio.duration) {
+                                self.audio.currentTime = pos * self.audio.duration;
+                              }
                             }
                           });
                           
                           // 鼠标按下事件 - 开始拖动
                           const startDragging = function(e) {
                             self.isDragging = true;
+                            // 添加拖动类，便于样式调整
+                            self.progressBar.classList.add('dragging');
+                            // 更新进度条位置
+                            updateProgressFromPosition(e);
                             // 阻止默认行为和冒泡，避免拖动时选中文本
                             e.preventDefault();
                             e.stopPropagation();
@@ -691,15 +734,42 @@
                           // 鼠标释放事件 - 结束拖动
                           const endDragging = function(e) {
                             if (self.isDragging && self.audio && self.audio.duration) {
-                              self.isDragging = false;
+                              // 移除拖动类
+                              self.progressBar.classList.remove('dragging');
+                              
+                              // 记录拖动前的播放状态
+                              const wasPaused = self.audio.paused;
+                               
                               // 使用鼠标位置计算准确的播放位置
+                              let newPosition;
                               if (e) {
-                                const pos = updateProgressFromPosition(e);
-                                self.audio.currentTime = pos * self.audio.duration;
+                                // 重新计算位置，确保使用最新的鼠标位置
+                                const rect = self.progressBar.getBoundingClientRect();
+                                newPosition = (e.clientX - rect.left) / rect.width;
+                                // 限制在0-1范围内
+                                newPosition = Math.max(0, Math.min(1, newPosition));
                               } else {
                                 // 当没有事件对象时，使用当前进度条宽度
                                 const width = parseFloat(self.progress.style.width || '0') / 100;
-                                self.audio.currentTime = width * self.audio.duration;
+                                newPosition = width;
+                              }
+                               
+                              // 确保设置为有效的时间位置
+                              const newTime = newPosition * self.audio.duration;
+                              console.log('设置音乐位置:', newTime, '秒 (', newPosition * 100, '%)');
+                              self.audio.currentTime = newTime;
+                               
+                              // 更新拖动状态
+                              self.isDragging = false;
+                               
+                              // 如果拖动前是暂停状态，拖动后继续保持暂停
+                              if (wasPaused) {
+                                // 使用setTimeout确保currentTime更新完成后再暂停
+                                setTimeout(function() {
+                                  self.audio.pause();
+                                  self.isPlaying = false;
+                                  self.updatePlayButton();
+                                }, 50);
                               }
                             }
                           };
@@ -710,16 +780,48 @@
                             thumb.addEventListener('mousedown', startDragging);
                           }
                           
-                          // 全局鼠标事件
+                          // 全局鼠标事件 - 存储引用以便后续移除
+                          this.eventHandlers.mousemove = drag;
                           document.addEventListener('mousemove', drag);
-                          document.addEventListener('mouseup', function(e) {
+                          
+                          this.eventHandlers.mouseup = function(e) {
                             endDragging(e);
-                          });
+                          };
+                          document.addEventListener('mouseup', this.eventHandlers.mouseup);
+                          
                           // 处理鼠标离开窗口的情况
-                          document.addEventListener('mouseleave', function(e) {
+                          this.eventHandlers.mouseleave = function(e) {
                             endDragging(e);
+                          };
+                          document.addEventListener('mouseleave', this.eventHandlers.mouseleave);
+                          
+                          // 触摸事件支持
+                          this.progressBar.addEventListener('touchstart', function(e) {
+                            // 阻止默认的触摸行为（如滚动）
+                            e.preventDefault();
+                            if (e.touches && e.touches[0]) {
+                              startDragging(e.touches[0]);
+                            }
                           });
+                          
+                          this.eventHandlers.touchmove = function(e) {
+                            if (self.isDragging && e.touches && e.touches[0]) {
+                              e.preventDefault();
+                              drag(e.touches[0]);
+                            }
+                          };
+                          document.addEventListener('touchmove', this.eventHandlers.touchmove);
+                          
+                          this.eventHandlers.touchend = function(e) {
+                            if (e.changedTouches && e.changedTouches[0]) {
+                              endDragging(e.changedTouches[0]);
+                            }
+                          };
+                          document.addEventListener('touchend', this.eventHandlers.touchend);
                         }
+                        
+                        // 预加载音频
+                        this.audio.load();
                     },
                     
                     // 切换播放/暂停
@@ -733,14 +835,19 @@
                           this.isPlaying = true;
                           this.updatePlayButton();
                           
-                          // 尝试播放，处理可能的自动播放限制
-                          var self = this;
-                          var playPromise = this.audio.play();
+                          // 确保音频已加载
+                          if (this.audio.readyState < 2) {
+                            // 如果音频尚未加载足够数据，先加载
+                            this.audio.load();
+                          }
                           
-                          if (playPromise !== undefined) {
-                            playPromise.catch(function(error) {
-                              console.warn('播放失败，需要用户交互:', error);
-                            });
+                          // 立即播放音乐，使用try-catch确保在各种环境下都能正常工作
+                          try {
+                            this.audio.play();
+                          } catch (e) {
+                            // 如果自动播放失败，尝试在用户交互上下文中再次播放
+                            console.log('音频播放尝试:', e.message);
+                            // 保持UI状态为播放中，因为用户已明确点击了播放按钮
                           }
                         }
                     },
@@ -790,6 +897,16 @@
                         
                         var progress = (this.audio.currentTime / this.audio.duration) * 100;
                         this.progress.style.width = progress + '%';
+                        
+                        // 同时更新滑块位置
+                        const thumb = document.querySelector('[data-music-thumb]');
+                        if (thumb && this.progressBar) {
+                          const rect = this.progressBar.getBoundingClientRect();
+                          const thumbWidth = thumb.offsetWidth || 16;
+                          const thumbPos = (progress / 100 * rect.width) - (thumbWidth / 2);
+                          const maxPos = rect.width - thumbWidth;
+                          thumb.style.left = Math.max(0, Math.min(maxPos, thumbPos)) + 'px';
+                        }
                     },
                     
                     // 更新时间显示
@@ -831,6 +948,15 @@
                     }
                   });
                 }
+                
+                // 防止其他交互影响音乐播放
+                document.addEventListener('click', function(e) {
+                  // 如果点击的不是音乐播放器的暂停按钮，就不做任何处理
+                  // 这样其他所有点击都不会影响音乐播放
+                  if (!e.target.closest('[data-music-toggle]')) {
+                    // 什么都不做，音乐继续播放
+                  }
+                });
             })();
         </script>
 
@@ -1243,7 +1369,7 @@
                 <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
                     <h3 class="home-article-title">
                         <a href="/2025/11/21/Cloudflare%E4%B8%8A%E9%85%8D%E7%BD%AE%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90/">
-                            Cloudflare上配置域名解析
+                            在Cloudflare上配置域名解析
                         </a>
                     </h3>
 
@@ -1273,7 +1399,7 @@ Clou...
         <!-- 首页文章列表的 categories/tags 显示已隐藏 -->
     </div>
 
-    <a class="home-article-readmore ml-4 whitespace-nowrap" href="/2025/11/21/Cloudflare%E4%B8%8A%E9%85%8D%E7%BD%AE%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90/">了解更多<span class="seo-reader-text">Cloudflare上配置域名解析</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
+    <a class="home-article-readmore ml-4 whitespace-nowrap" href="/2025/11/21/Cloudflare%E4%B8%8A%E9%85%8D%E7%BD%AE%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90/">了解更多<span class="seo-reader-text">在Cloudflare上配置域名解析</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
 </div>
 
                 </div>
@@ -1477,7 +1603,7 @@ Clou...
         <!-- 已隐藏：Powered by / Theme 信息（按用户请求移除） -->
         <!-- 原始内容：
         <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
-            <span>DESARROLLADO POR <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a></span>
+            <span>由 <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> 驱动</span>
             <span>&nbsp;THEME&nbsp;<a href="https://redefine.ohevan.com" target="_blank" rel="noopener">Redefine</a> v</span>
         </div>
         -->

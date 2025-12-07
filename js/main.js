@@ -67,7 +67,22 @@ export const main = {
     ) {
       initTyped("subtitle");
     }
-
+    
+     // 页面切换回主页时，重新初始化音乐播放器
+    if (location.pathname === config.root && document.querySelector('[data-music-progress]')) {
+      // 检查是否存在音乐播放器对象以及所需的方法
+      if (window.bannerMusicPlayer && window.bannerMusicPlayer.cleanup && window.bannerMusicPlayer.init && window.bannerMusicPlayer.updateVolumeIcon) {
+        try {
+          // 使用cleanup方法清理资源，包括移除事件监听器
+          window.bannerMusicPlayer.cleanup();
+          // 重新初始化播放器
+          window.bannerMusicPlayer.init();
+          window.bannerMusicPlayer.updateVolumeIcon();
+        } catch (e) {
+          console.warn('音乐播放器初始化失败:', e);
+        }
+      }
+    }
     if (theme.navbar.search.enable === true) {
       initLocalSearch();
     }
@@ -75,7 +90,7 @@ export const main = {
     if (theme.articles.code_block.copy === true) {
       initCopyCode();
     }
-
+    
     if (theme.articles.lazyload === true) {
       initLazyLoad();
     }
